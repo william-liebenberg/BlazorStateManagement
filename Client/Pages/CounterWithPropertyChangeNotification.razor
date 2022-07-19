@@ -1,0 +1,39 @@
+﻿@page "/counterWithPropertyChangeNotification"
+@implements IDisposable
+
+@* Inject our scoped CounterState and use it in the view / code section *@
+@inject CounterState _state
+
+<PageTitle>Counter with Observed State</PageTitle>
+
+<p class="h2">Counter with Observed State</p>
+<p class="mb-4">Current count: @_state.Value.Count</p>
+
+@* Note: Due to user interaction, the page will refresh and show updated state value, even though we have not called StateHasChanged *@
+<button type="button" class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button type="button" class="btn btn-warning" @onclick="Reset">Reset</button>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        _state.PropertyChanged += async (s, p) => await InvokeAsync(StateHasChanged);
+
+        await base.OnInitializedAsync();
+    }
+
+    public void Dispose()
+    {
+        _state.PropertyChanged -= async (s, p) => await InvokeAsync(StateHasChanged);
+    }
+
+    private void IncrementCount()
+    {
+        _state.Increment();
+    }
+
+    private void Reset()
+    {
+        _state.Reset();
+    }
+}

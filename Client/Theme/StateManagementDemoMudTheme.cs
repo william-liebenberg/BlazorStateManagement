@@ -1,6 +1,6 @@
 ﻿using MudBlazor;
 
-namespace BlazorStateManagement.Client.Theme
+namespace Client.Theme
 {
 	public class StateManagementDemoMudTheme
 	{

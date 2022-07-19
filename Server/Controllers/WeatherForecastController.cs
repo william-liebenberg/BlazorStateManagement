@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BlazorStateManagement.Shared;
+using Shared;
 
 namespace BlazorStateManagement.Server.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+	public class WeatherForecastController : ApiControllerBase
     {
         private static readonly string[] Summaries = new[]
         {
@@ -22,6 +20,8 @@ namespace BlazorStateManagement.Server.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+			Thread.Sleep(3000);
+			
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

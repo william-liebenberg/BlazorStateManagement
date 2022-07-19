@@ -1,0 +1,31 @@
+﻿@page "/manycounters"
+
+<PageTitle>Many Counters</PageTitle>
+
+@* Multiple counters - no shared state *@
+<MudCard Class="ma-4" Outlined="true">
+    <MudCardContent>
+        <Counter></Counter>
+        <Counter></Counter>
+    </MudCardContent>
+</MudCard>
+
+@* Multiple counters - using shared state (without state change communication) *@
+<MudCard Class="ma-4" Outlined="true">
+    <MudCardContent>
+        <CounterWithState></CounterWithState>
+        <CounterWithState></CounterWithState>
+    </MudCardContent>
+</MudCard>
+
+@* Multiple counters - using observable state (with state change communication) *@
+<MudCard Class="ma-4" Outlined="true">
+    <MudCardContent>
+        <CounterWithPropertyChangeNotification></CounterWithPropertyChangeNotification>
+        <CounterWithPropertyChangeNotification></CounterWithPropertyChangeNotification>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    
+}

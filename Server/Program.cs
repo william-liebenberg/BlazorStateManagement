@@ -3,9 +3,15 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+// Register the Swagger services
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddOpenApiDocument(configure =>
+{
+	configure.Title = "Flavours of State Management";
+});
 
 var app = builder.Build();
 
@@ -26,8 +32,11 @@ app.UseHttpsRedirection();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
-app.UseRouting();
+// Register the Swagger generator and the Swagger UI middlewares
+app.UseOpenApi();
+app.UseSwaggerUi3();
 
+app.UseRouting();
 
 app.MapRazorPages();
 app.MapControllers();

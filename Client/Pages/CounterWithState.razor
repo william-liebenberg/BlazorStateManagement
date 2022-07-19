@@ -1,0 +1,25 @@
+﻿@page "/counterWithState"
+
+@* Inject our scoped/singleton CounterState and use it in the view / code section *@
+@inject 			States.Counter _state
+
+<PageTitle>Counter with AppState</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Counter with AppState</MudText>
+<MudText Class="mb-4">Current count: @_state.Count</MudText>
+
+@* Note: Due to user interaction, the page will refresh and show updated state value, even though we have not called StateHasChanged *@
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="IncrementCount">Click me</MudButton>
+<MudButton Color="Color.Warning" Variant="Variant.Filled" @onclick="Reset">Reset</MudButton>
+
+@code {
+    private void IncrementCount()
+    {
+        ++_state.Count;
+    }
+
+    private void Reset()
+    {
+        _state.Count = 0;
+    }
+}

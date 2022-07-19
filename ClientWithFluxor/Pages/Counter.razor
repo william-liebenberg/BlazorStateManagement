@@ -1,0 +1,41 @@
+﻿@page "/counter"
+
+@using Fluxor
+@using ClientWithFluxor.Store.States
+@using ClientWithFluxor.Store.Features.Counter
+
+@inherits FluxorComponent
+
+@inject IState<CounterState> state
+@inject CounterFeatureClient client
+
+<PageTitle>Counter</PageTitle>
+<MudText Typo="Typo.h3" GutterBottom="true">Counter</MudText>
+
+@if(state.Value.IsLoading)
+{
+    <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+}
+else
+{
+    <MudText Class="mb-4">Current count: @state.Value.Count</MudText>
+    <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="IncrementCount">+1</MudButton>
+    <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="DoubleIncrementCount">+2</MudButton>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    private void IncrementCount()
+    {
+        client.Increment();
+    }
+
+    private void DoubleIncrementCount()
+    {
+        client.IncrementBy(2);
+    }
+}

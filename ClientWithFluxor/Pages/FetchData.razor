@@ -1,6 +1,6 @@
 ﻿@page "/fetchdata"
-@inject HttpClient Http
-@using BlazorStateManagement.Shared
+
+@inject IWeatherForecastClient _weatherClient
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -33,10 +33,10 @@ else
 
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private ICollection<WeatherForecast>? forecasts;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        forecasts = await _weatherClient.GetAsync();
     }
 }
