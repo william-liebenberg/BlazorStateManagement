@@ -1,0 +1,23 @@
+@page "/counter"
+
+@using ClientWithVanillaFluxor.States.Counter
+
+@inject IState<CounterState> CounterState
+@inject IDispatcher Dispatcher
+
+@inherits FluxorComponent
+
+<h1>Counter</h1>
+
+<p>Current count: @CurrentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int CurrentCount => CounterState.Value.Count;
+
+    private void IncrementCount()
+    {
+        Dispatcher.Dispatch(new IncreaseCounter());
+    }
+}

@@ -10,6 +10,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientWithFluxor", "ClientWithFluxor\ClientWithFluxor.csproj", "{BBC97ADD-A422-49A2-9BB0-759B0212FC94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientWithVanillaFluxor", "ClientWithVanillaFluxor\ClientWithVanillaFluxor.csproj", "{FD88EB4A-5772-48FB-A3FC-B6338E7868C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{BBC97ADD-A422-49A2-9BB0-759B0212FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBC97ADD-A422-49A2-9BB0-759B0212FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBC97ADD-A422-49A2-9BB0-759B0212FC94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD88EB4A-5772-48FB-A3FC-B6338E7868C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD88EB4A-5772-48FB-A3FC-B6338E7868C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD88EB4A-5772-48FB-A3FC-B6338E7868C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD88EB4A-5772-48FB-A3FC-B6338E7868C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
