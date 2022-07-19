@@ -6,12 +6,12 @@
 
 <PageTitle>Counter with Observed State</PageTitle>
 
-<p class="h2">Counter with Observed State</p>
-<p class="mb-4">Current count: @_state.Value.Count</p>
+<MudText Typo="Typo.h3" GutterBottom="true">Counter with Observed State</MudText>
+<MudText Class="mb-4">Current count: @_state.Value.Count</MudText>
 
 @* Note: Due to user interaction, the page will refresh and show updated state value, even though we have not called StateHasChanged *@
-<button type="button" class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-<button type="button" class="btn btn-warning" @onclick="Reset">Reset</button>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="IncrementCount">Click me</MudButton>
+<MudButton Color="Color.Warning" Variant="Variant.Filled" @onclick="Reset">Reset</MudButton>
 
 @code {
 
