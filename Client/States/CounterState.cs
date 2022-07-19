@@ -51,6 +51,8 @@ namespace Client.States
 			State.Count += step;
 			OnPropertyChanged();
 		}
+
+		public int Count => State.Count;
 	}
 
 	public class CounterListState : BaseState<List<Counter>>
