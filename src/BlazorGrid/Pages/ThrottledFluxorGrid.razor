@@ -1,0 +1,193 @@
+﻿@page "/throttledfluxorgrid"
+@using System.Diagnostics
+@using BlazorGrid.ItemState
+@using Fluxor
+@using global::Shared
+@implements ISignalRHandlerService
+
+@inject IState<ItemState> _itemState;
+@inject IDispatcher _dispatcher;
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent;
+
+<h1>Throttled Grid 🚀</h1>
+<div class="buttonContainer">
+    <div>
+        <button type="button" class="btn btn-primary" hidden="@(IsConnected() == true)" @onclick="@ConnectToSignalR">Connect SignalR</button>
+        <button type="button" class="btn btn-primary" hidden="@(IsConnected() == false)" @onclick="@DisconnectFromSignalR">Disconnect SignalR</button>
+    </div>
+
+    <div>
+        <button type="button" class="btn btn-danger" @onclick="@Clear" disabled="@IsProcessing">Clear</button>
+    </div>
+</div>
+<div class="textContainer">
+    <div>@LastOperation</div>
+</div>
+
+
+<div class="tableFixHead">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Random01</th>
+                <th>Random02</th>
+            </tr>
+        </thead>
+        <tbody>
+            @* <Virtualize @ref="VirtualizedItemContainer" Context="item" Items="_itemState.Value.ItemViews"> *@
+            <Virtualize @ref="VirtualizedItemContainer" Context="item" ItemsProvider="@LoadItems" OverscanCount="50">
+                <ItemContent>
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Label</td>
+                        <td>@item.RandomField01</td>
+                        <td>@item.RandomField02</td>
+                    </tr>
+                </ItemContent>
+                @* <Placeholder> *@
+                @*     <p>Loading so many items...</p> *@
+                @* </Placeholder> *@
+            </Virtualize>
+        </tbody>
+    </table>
+</div>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        // BOOM! You can throttle the state notifications rate!
+        MaximumStateChangedNotificationsPerSecond = 5;
+
+        // subscribe to the IStore<T>.StateChanged notification to update the virtualized table contents
+        _itemState.StateChanged += async (_, _) =>
+        {
+            await UpdateVirtualizedTable();
+        };
+
+        await base.OnInitializedAsync();
+    }
+
+    [Inject]
+    private ISignalRService? _signalRService { get; set; }
+
+    public bool IsConnected()
+    {
+        if (_signalRService != null)
+        {
+            return _signalRService.IsConnected();
+        }
+        return false;
+    }
+
+    public async Task ConnectToSignalR()
+    {
+        if (_signalRService == null)
+        {
+            Console.WriteLine("*** !! SIGNALR IS NULL !! ***");
+            return;
+        }
+
+        if (_signalRService.IsConnected())
+        {
+            Console.WriteLine("*** !! already connected !! ***");
+            return;
+        }
+
+        await _signalRService.ConnectToSignalR("http://localhost:7071/api");
+        _signalRService.SetHandler(this);
+    }
+
+    public async Task DisconnectFromSignalR()
+    {
+        if (_signalRService != null && _signalRService.IsConnected())
+        {
+            await _signalRService.Disconnect();
+        }
+    }
+
+    private string LastOperation { get; set; } = "No operations performed";
+    private bool IsProcessing { get; set; }
+    private Virtualize<ItemView>? VirtualizedItemContainer { get; set; }
+
+    private async Task Clear()
+    {
+        if (this.IsProcessing)
+        {
+            Console.WriteLine("*** already processing - can't clear items ***");
+            return;
+        }
+
+        this.IsProcessing = true;
+        Log($"Clearing {_itemState.Value.ItemViews.Count} items");
+        _dispatcher.Dispatch(new ItemActions.ClearItem());
+        this.IsProcessing = false;
+        await Task.CompletedTask;
+    }
+
+    private async Task UpdateVirtualizedTable()
+    {
+        if(this.VirtualizedItemContainer is not null)
+        {
+            await this.VirtualizedItemContainer.RefreshDataAsync();
+        }
+    }
+
+    private void LogInfo(string str)
+    {
+        Console.WriteLine(str);
+        this.LastOperation = str;
+    }
+
+    private void Log(string str)
+    {
+        Console.WriteLine(str);
+        this.LastOperation = str;
+    }
+
+    private void LogDebug(string str)
+    {
+        Console.WriteLine(str);
+    }
+    
+    private async ValueTask<ItemsProviderResult<ItemView>> LoadItems(ItemsProviderRequest request)
+    {
+        var watch = Stopwatch.StartNew();
+        var page = new ItemsProviderResult<ItemView>(_itemState.Value.ItemViews.Skip(request.StartIndex).Take(request.Count), _itemState.Value.ItemViews.Count());
+        watch.Stop();
+
+        Log($"Providing items {request.StartIndex} - {request.StartIndex + request.Count}/{_itemState.Value.ItemViews.Count} took {watch.Elapsed.TotalMilliseconds}ms");
+
+        return await Task.FromResult(page);
+    }
+
+    // Triggered from SignalR
+    public async Task OnNewItem(ItemView item)
+    {
+        //if (IsProcessing)
+        //{
+        //    Console.WriteLine("*** already processing - can't add new item ***");
+        //    return;
+        //}
+
+        //this.IsProcessing = true;
+
+        LogDebug($"Add item: {item.Id} - {item.Label}");
+        _dispatcher.Dispatch(new ItemActions.AddItemView(item));
+        LogInfo($"{_itemState.Value.ItemViews.Count}");
+
+        //this.IsProcessing = false;
+
+        await Task.CompletedTask;
+    }
+
+    // Triggered from SignalR
+    public async Task OnUpdateItem(ItemView item)
+    {
+        LogDebug($"Update item: {item.Id} - {item.Label}");
+        await UpdateVirtualizedTable();
+    }
+}

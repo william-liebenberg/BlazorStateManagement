@@ -1,0 +1,218 @@
+﻿@page "/throttledgrid"
+@using System.Diagnostics
+@using global::Shared
+@implements ISignalRHandlerService
+
+<h1>Throttled Grid 🚀</h1>
+
+<div class="buttonContainer">
+    <div>
+        <button type="button" class="btn btn-primary" hidden="@(IsConnected() == true)" @onclick="@ConnectToSignalR">Connect SignalR</button>
+        <button type="button" class="btn btn-primary" hidden="@(IsConnected() == false)" @onclick="@DisconnectFromSignalR">Disconnect SignalR</button>
+    </div>
+
+    <div>
+        <button type="button" class="btn btn-danger" @onclick="@Clear" disabled="@IsProcessing">Clear</button>
+    </div>
+</div>
+<div class="textContainer">
+    <div>@LastOperation</div>
+</div>
+
+
+<div class="tableFixHead">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Random01</th>
+                <th>Random02</th>
+            </tr>
+        </thead>
+        <tbody>
+            <Virtualize @ref="VirtualizedItemContainer" Context="item" ItemsProvider="@LoadItems" OverscanCount="50">
+                <ItemContent>
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Label</td>
+                        <td>@item.RandomField01</td>
+                        <td>@item.RandomField02</td>
+                    </tr>
+                </ItemContent>
+                @* <Placeholder> *@
+                @*     <p>Loading so many items...</p> *@
+                @* </Placeholder> *@
+            </Virtualize>
+        </tbody>
+    </table>
+</div>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        // *** DONT DO THIS ***
+        //this.ItemAdded += async (s, e) => await UpdateVirtualizedTable();
+
+        // *** DO THIS INSTEAD ***
+        this.ItemAdded += CreateThrottledEventHandler(async (s, e) =>
+        {
+            await UpdateVirtualizedTable();
+        }, TimeSpan.FromSeconds(0.2)); // TODO: The refresh rate could be a variable
+
+        await base.OnInitializedAsync();
+    }
+
+    [Inject]
+    private ISignalRService? _signalRService { get; set; } = null!;
+
+    public bool IsConnected()
+    {
+        if (_signalRService != null)
+        {
+            return _signalRService.IsConnected();
+        }
+        return false;
+    }
+
+    public async Task ConnectToSignalR()
+    {
+        if (_signalRService == null)
+        {
+            Console.WriteLine("*** !! SIGNALR IS NULL !! ***");
+            return;
+        }
+
+        if (_signalRService.IsConnected())
+        {
+            Console.WriteLine("*** !! already connected !! ***");
+            return;
+        }
+
+        await _signalRService.ConnectToSignalR("http://localhost:7071/api");
+        _signalRService.SetHandler(this);
+    }
+
+    public async Task DisconnectFromSignalR()
+    {
+        if (_signalRService != null && _signalRService.IsConnected())
+        {
+            await _signalRService.Disconnect();
+        }
+    }
+
+    private string LastOperation { get; set; } = "No operations performed";
+    private bool IsProcessing { get; set; }
+    private Virtualize<ItemView>? VirtualizedItemContainer { get; set; }
+    private List<ItemView> _items = new();
+
+    private async Task Clear()
+    {
+        if (this.IsProcessing)
+        {
+            Console.WriteLine("*** already processing - can't clear items ***");
+            return;
+        }
+
+        this.IsProcessing = true;
+        Log($"Clearing {_items.Count} items");
+        _items.Clear();
+        this.IsProcessing = false;
+        await Task.CompletedTask;
+    }
+
+    private async Task UpdateVirtualizedTable()
+    {
+        if(this.VirtualizedItemContainer is not null)
+        {
+            await this.VirtualizedItemContainer.RefreshDataAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void LogInfo(string str)
+    {
+        Console.WriteLine(str);
+        this.LastOperation = str;
+    }
+
+    private void Log(string str)
+    {
+        Console.WriteLine(str);
+        this.LastOperation = str;
+    }
+
+    private void LogDebug(string str)
+    {
+        Console.WriteLine(str);
+    }
+
+    private event EventHandler<EventArgs>? ItemAdded = null!;
+
+    private EventHandler<EventArgs> CreateThrottledEventHandler(EventHandler<EventArgs> handler, TimeSpan throttle)
+    {
+        bool throttling = false;
+        return (s, e) =>
+        {
+            if (throttling)
+            {
+                return;
+            }
+
+            handler(s, e);
+            throttling = true;
+
+            Task.Delay(throttle).ContinueWith(_ => throttling = false);
+        };
+    }
+
+    private async ValueTask<ItemsProviderResult<ItemView>> LoadItems(ItemsProviderRequest request)
+    {
+        var watch = Stopwatch.StartNew();
+        var page = new ItemsProviderResult<ItemView>(_items.Skip(request.StartIndex).Take(request.Count), _items.Count());
+        watch.Stop();
+
+        Log($"Providing items {request.StartIndex} - {request.StartIndex + request.Count}/{_items.Count()} took {watch.Elapsed.TotalMilliseconds}ms");
+
+        return await Task.FromResult(page);
+    }
+
+    // Triggered from SignalR
+    public async Task OnNewItem(ItemView item)
+    {
+        if (IsProcessing)
+        {
+            Console.WriteLine("*** already processing - can't add new item ***");
+            return;
+        }
+
+        this.IsProcessing = true;
+
+        LogDebug($"Add item: {item.Id} - {item.Label}");
+        _items.Insert(0, item);
+        LogInfo($"{_items.Count}");
+
+        this.IsProcessing = false;
+
+        var onItemAdded = this.ItemAdded;
+        if (onItemAdded == null)
+        {
+            LogDebug("OnNewItem - OnItemAdded event handler is null!!");
+        }
+        else
+        {
+            LogDebug("OnNewItem - Invoking the ItemAdded Event!");
+            onItemAdded.Invoke(this, EventArgs.Empty);
+        }
+
+        await Task.CompletedTask;
+    }
+
+    // Triggered from SignalR
+    public async Task OnUpdateItem(ItemView item)
+    {
+        LogDebug($"Update item: {item.Id} - {item.Label}");
+        await UpdateVirtualizedTable();
+    }
+}

@@ -1,0 +1,51 @@
+.buttonContainer {
+    padding: 8px;
+    display: flex;
+}
+
+.textContainer {
+    padding: 8px;
+}
+
+.buttonContainer div button {
+    margin: 4px;
+}
+
+textarea {
+    width: 100%;
+}
+
+.textWrapper {
+    margin: 4px;
+}
+
+.tableFixHead {
+    overflow-y: auto;
+    height: 606px;
+}
+
+    .tableFixHead thead th {
+        position: sticky;
+        top: 0;
+        border: solid 2px #008cd2;
+        background-color: #002341;
+        color: #ffffff;
+    }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th,
+td {
+    padding: 4px 8px;
+    border: solid 2px #002341;
+    background-color: #008cd2;
+    color: #ffffff;
+    border-radius: 2px;
+}
+
+th {
+    background: #eee;
+}

@@ -1,0 +1,14 @@
+{
+    "IsEncrypted": false,
+    "Values": {
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+        // connection string to Azure SignalR Service ... or ... SignalR Service emulator (https://github.com/Azure/azure-signalr/blob/dev/docs/emulator.md)
+        "AzureSignalRConnectionString": "Endpoint=http://localhost;Port=8888;AccessKey=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGH;Version=1.0;"
+    },
+    "Host": {
+        "LocalHttpPort": 7071,
+        "CORS": "http://localhost:5000,https://localhost:5001,https://localhost:44317",
+        "CORSCredentials": true
+    }
+}

@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorGrid", "BlazorGrid\BlazorGrid.csproj", "{AA5C5584-286F-4283-9557-A3FED2ACAA92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalR-func", "SignalR-func\SignalR-func.csproj", "{5484612E-9337-4535-8C08-2266C7251CDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{4C0A887D-ACD2-4953-B6B8-934572443AD4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA5C5584-286F-4283-9557-A3FED2ACAA92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA5C5584-286F-4283-9557-A3FED2ACAA92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA5C5584-286F-4283-9557-A3FED2ACAA92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA5C5584-286F-4283-9557-A3FED2ACAA92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5484612E-9337-4535-8C08-2266C7251CDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5484612E-9337-4535-8C08-2266C7251CDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5484612E-9337-4535-8C08-2266C7251CDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5484612E-9337-4535-8C08-2266C7251CDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C0A887D-ACD2-4953-B6B8-934572443AD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C0A887D-ACD2-4953-B6B8-934572443AD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C0A887D-ACD2-4953-B6B8-934572443AD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C0A887D-ACD2-4953-B6B8-934572443AD4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
